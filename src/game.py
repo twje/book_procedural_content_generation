@@ -23,7 +23,11 @@ class GridUI:
         #foo.distribute(150, 0)
         # foo.layout()
 
-        layout.distribute_hort(self.data, cols=4)
+        layout.stack_hort(self.data, cols=4, weights={1: 10, 2: 100, 3: 10})
+        layout.stack_vert(self.data, cols=4, seperator=5, distribute_evenly=True)
+
+
+        #layout.distribute_vert(self.data, cols=4, span=50)
 
         #layout.distribute_hort(self.data, 4, 0, layout.Direction.CENTER)
         #layout.expand_hort(self.data, 4, 500)
@@ -79,26 +83,26 @@ class HelpUI:
             self.load_text_element("Attack"),
             self.load_sprite_element(
                 "../resources/ui/spr_attack_ui_alt.png"),
-            self.load_text_element("Attack"),
+            self.load_text_element("Ultra Attack"),
             self.load_sprite_element("../resources/ui/spr_defense_ui.png"),
             self.load_text_element("Defence"),
             self.load_sprite_element("../resources/ui/spr_defense_ui_alt.png"),
-            self.load_text_element("Defence"),
+            self.load_text_element("Ultra Defence"),
             self.load_sprite_element("../resources/ui/spr_strength_ui.png"),
             self.load_text_element("Strength"),
             self.load_sprite_element(
                 "../resources/ui/spr_strength_ui_alt.png"),
-            self.load_text_element("Strength"),
+            self.load_text_element("Ultra Strength"),
             self.load_sprite_element("../resources/ui/spr_dexterity_ui.png"),
             self.load_text_element("Dexterity"),
             self.load_sprite_element(
                 "../resources/ui/spr_dexterity_ui_alt.png"),
-            self.load_text_element("Dexterity"),
+            self.load_text_element("Ultra Dexterity"),
 
             self.load_sprite_element("../resources/ui/spr_stamina_ui.png"),
             self.load_text_element("Stamina"),
             self.load_sprite_element("../resources/ui/spr_stamina_ui_alt.png"),
-            self.load_text_element("Stamina"),
+            self.load_text_element("Ultra Stamina"),
         ]
 
         grid = GridUI(col0_unpack, 4, self.groups)
@@ -180,7 +184,7 @@ class Game:
             self.obstacle_sprites
         )
 
-        self.help_ui = HelpUI([self.ui_sprites, self.ui_debug_sprites])
+        self.help_ui = HelpUI([self.ui_sprites])
         self.help_ui.show()
 
         # self.load_ui()
