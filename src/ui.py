@@ -1,0 +1,41 @@
+import pygame
+
+font = pygame.font.Font(None, 30)
+
+
+class SpriteElement(pygame.sprite.Sprite):
+    def __init__(self, position, groups, surface):
+        super().__init__(groups)
+        self.image = surface
+        self.rect = self.image.get_rect(topleft=position)
+
+
+class TextElement(pygame.sprite.Sprite):
+    def __init__(self, position, groups, text, min_width=-1, min_height=-1, centerx=False, centery=False):
+        super().__init__(groups)
+        self.text = font.render(text, True, 'White')
+        self.rect = self.text.get_rect(topleft=position)
+
+        if min_width >= 0:
+            self.rect.width = max(self.rect.width, min_width)
+        if min_height >= 0:
+            self.rect.height = max(self.rect.height, min_height)
+
+        bbox = self.text.get_rect(topleft=position)
+        offset = pygame.Vector2(self.rect.topleft)
+        if centerx:
+            offset.x = self.rect.centerx - bbox.width/2
+        if centery:
+            offset.y = self.rect.centery - bbox.height/2
+
+        self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
+        self.image = self.image.convert_alpha()
+        self.image.blit(self.text, (offset.x, offset.y))
+
+
+class Box(pygame.sprite.Sprite):
+    def __init__(self, rect, groups):
+        super().__init__(groups)
+        self.rect = rect
+        self.image = pygame.Surface(rect.size, pygame.SRCALPHA, 32)
+        pygame.draw.rect(self.image, (0, 255, 255), self.rect, 1)
