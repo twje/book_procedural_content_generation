@@ -176,6 +176,56 @@ def justify_bottom(sprites, target):
             sprite.rect.bottom += offset
 
 
+def center_hort(sprites, target):
+    """"""
+    sprite_groups = convert_to_sprite_groups(sprites)
+    bbox = global_bounding_box(sprite_groups)
+
+    offset = (target.width - bbox.width)/2
+    for sprite_group in sprite_groups:
+        for sprite in sprite_group:
+            relative_left = sprite.rect.left - bbox.left
+            sprite.rect.left = relative_left + offset
+
+
+def center_vert(sprites, target):
+    """"""
+    sprite_groups = convert_to_sprite_groups(sprites)
+    bbox = global_bounding_box(sprite_groups)
+
+    offset = (target.height - bbox.height)/2
+    for sprite_group in sprite_groups:
+        for sprite in sprite_group:
+            relative_top = sprite.rect.top - bbox.top
+            sprite.rect.top = relative_top + offset
+
+
+def align_middle_hort(sprites):
+    """"""
+    sprite_groups = convert_to_sprite_groups(sprites)
+    bbox = global_bounding_box(sprite_groups)
+
+    for sprite_group in sprite_groups:
+        sg_bbox = bounding_box(sprite_group)
+        offset = (bbox.width - sg_bbox.width)/2
+        for sprite in sprite_group:
+            relative_left = sprite.rect.left - sg_bbox.left
+            sprite.rect.left = bbox.left + relative_left + offset
+
+
+def align_middle_vert(sprites):
+    """"""
+    sprite_groups = convert_to_sprite_groups(sprites)
+    bbox = global_bounding_box(sprite_groups)
+
+    for sprite_group in sprite_groups:
+        sg_bbox = bounding_box(sprite_group)
+        offset = (bbox.height - sg_bbox.height)/2
+        for sprite in sprite_group:
+            relative_top = sprite.rect.top - sg_bbox.top
+            sprite.rect.top = bbox.top + relative_top + offset
+
+
 def position_sprite_group_left(sprite_group, value):
     """Position left side of sprite_group bbox by value."""
     bbox = bounding_box(sprite_group)
@@ -192,7 +242,7 @@ def position_sprite_group_top(sprite_group, value):
         sprite.rect.top = value + offsety
 
 
-def stack_hort(sprites, cols=None, weights=None):
+def stack_hort(sprites, cols=None, weights=None, seperator=0):
     """Stack sprites next to each other from right to left seperated by weights."""
     sprite_groups = convert_to_sprite_groups(sprites)
     cols = len(sprite_groups) if cols is None else cols
@@ -200,6 +250,25 @@ def stack_hort(sprites, cols=None, weights=None):
     weights = normalize_weights(weights)
     max_col_widths = compute_max_col_widths(sprite_groups, cols, rows)
 
+    # update weights by seperator
+    for col in range(cols):
+        if col == 0:
+            continue
+        weights[col] = max(weights[col], seperator)
+
+    # compute spacer
+    spacers = defaultdict(lambda: [0, 0])
+    for row in range(rows):
+        for col in range(cols):
+            index = col + row * cols
+            if index >= len(sprite_groups):
+                continue
+
+            sprite_group = sprite_groups[index]
+            space = max_col_widths[col] - bounding_box(sprite_group).width
+            spacers[index][0] = 0
+            spacers[index][1] = space
+
     # layout
     left = global_bounding_box(sprite_groups).left
     for row in range(rows):
@@ -209,47 +278,16 @@ def stack_hort(sprites, cols=None, weights=None):
             if index >= len(sprite_groups):
                 continue
             sprite_group = sprite_groups[index]
-            offset += weights[col]
-            position_sprite_group_left(sprite_group, left + offset)
-            offset += max_col_widths[col]
-
-
-def distribute_hort(sprites, cols=None, span=0):
-    """Evenly distribute sprites horizontally relative to their global bounding box."""
-    sprite_groups = convert_to_sprite_groups(sprites)
-    cols = len(sprite_groups) if cols is None else cols
-    rows = math.ceil(len(sprite_groups)/cols)
-    max_col_width = max(compute_max_col_width(sprite_groups), span)
-
-    # layout
-    weights = defaultdict(lambda: [0, 0])
-    for row in range(rows):
-        for col in range(cols):
-            index = col + row * cols
-            if index >= len(sprite_groups):
-                continue
-            sprite_group = sprite_groups[index]
-            space = max_col_width - bounding_box(sprite_group).width
-            weights[index][0] = space/2
-            weights[index][1] = space/2
-
-    left = global_bounding_box(sprite_groups).left
-    for row in range(rows):
-        offset = 0
-        for col in range(cols):
-            index = col + row * cols
-            if index >= len(sprite_groups):
-                continue
-            sprite_group = sprite_groups[index]
+            space = weights[col] + spacers[index][0]
             position_sprite_group_left(
                 sprite_group,
-                left + weights[index][0] + offset
+                left + space + offset
             )
             width = bounding_box(sprite_group).width
-            offset += weights[index][0] + width + weights[index][1]
+            offset += space + width + spacers[index][1]
 
 
-def stack_vert(sprites, cols=None, weights=None, seperator=0, distribute_evenly=False):
+def stack_vert(sprites, cols=None, weights=None, span=0, seperator=0, distribute_evenly=False):
     """Stack sprites next to each other from top to bottom seperated by weights and or seperator."""
     sprite_groups = convert_to_sprite_groups(sprites)
     cols = len(sprite_groups) if cols is None else cols
@@ -273,9 +311,9 @@ def stack_vert(sprites, cols=None, weights=None, seperator=0, distribute_evenly=
                 continue
 
             if distribute_evenly:
-                row_height = max_row_height
+                row_height = max(span, max_row_height)
             else:
-                row_height = max_row_heights[row]
+                row_height = max(span, max_row_heights[row])
             sprite_group = sprite_groups[index]
             space = row_height - bounding_box(sprite_group).height
             spacers[index][0] = space/2
@@ -297,54 +335,3 @@ def stack_vert(sprites, cols=None, weights=None, seperator=0, distribute_evenly=
             )
             height = bounding_box(sprite_group).height
             offset += space + height + spacers[index][1]
-
-    # # layout
-    # top = global_bounding_box(sprite_groups).top
-    # for col in range(cols):
-    #     offset = 0
-    #     for row in range(rows):
-    #         index = col + row * cols
-    #         if index >= len(sprite_groups):
-    #             continue
-    #         sprite_group = sprite_groups[index]
-    #         offset += weights[row]
-    #         position_sprite_group_top(sprite_group, top + offset)
-    #         offset += max_row_heights[row]
-
-
-def distribute_vert(sprites, cols=None, span=0):
-    """Evenly distribute sprites vertically relative to their global bounding box."""
-
-    # implement in terms of stack_vert
-
-    # sprite_groups = convert_to_sprite_groups(sprites)
-    # cols = len(sprite_groups) if cols is None else cols
-    # rows = math.ceil(len(sprite_groups)/cols)
-    # max_row_height = max(compute_max_row_height(sprite_groups), span)
-
-    # # layout
-    # weights = defaultdict(lambda: [0, 0])
-    # for col in range(cols):
-    #     for row in range(rows):
-    #         index = col + row * cols
-    #         if index >= len(sprite_groups):
-    #             continue
-    #         sprite_group = sprite_groups[index]
-    #         space = max_row_height - bounding_box(sprite_group).height
-    #         weights[index][0] = space/2
-    #         weights[index][1] = space/2
-
-    # top = global_bounding_box(sprite_groups).top
-    # for col in range(cols):
-    #     offset = 0
-    #     for row in range(rows):
-    #         index = col + row * cols
-    #         if index >= len(sprite_groups):
-    #             continue
-    #         sprite_group = sprite_groups[index]
-    #         position_sprite_group_top(
-    #             sprite_group,
-    #             top + weights[index][0] + offset
-    #         )
-    #         height = bounding_box(sprite_group).height
-    #         offset += weights[index][0] + height + weights[index][1]

@@ -19,50 +19,9 @@ class GridUI:
         self.groups = groups
 
     def left_justify(self, indicies):
-        #foo = layout.HortStack(self.data, 4)
-        #foo.distribute(150, 0)
-        # foo.layout()
-
-        layout.stack_hort(self.data, cols=4, weights={1: 10, 2: 100, 3: 10})
-        layout.stack_vert(self.data, cols=4, seperator=5, distribute_evenly=True)
-
-
-        #layout.distribute_vert(self.data, cols=4, span=50)
-
-        #layout.distribute_hort(self.data, 4, 0, layout.Direction.CENTER)
-        #layout.expand_hort(self.data, 4, 500)
-
-        #
-        # layout.align_middle_vert(*self.data)
-
-        # left justify sprites in each row
-        # for row in self.packed_data:
-        #layout.move(0, 0, *self.data)
-
-        #layout.move(300, 300,self.data)
-
-        # layout.stack_hort(
-        #     self.data,
-        #     cols=4,
-        #     space=10,
-        #     weights=5
-        # )
-
-        # layout.stack_vert(
-        #     self.data,
-        #     cols=4,
-        #     weights=5
-        # )
-
-        # bounds.run()
-
-        #ui.Box(bounds, self.groups)
-        #ui.Box(pygame.rect.Rect(0, 0, 500, 200), self.groups)
-
-        # stack rows on top of each other
-        # layout.stack_vert(
-        #     self.packed_data,
-        # )
+        layout.stack_hort(self.data, cols=4, weights={
+                          0: 10, 1: 30, 2: 40, 3: 40})
+        layout.stack_vert(self.data, cols=4, distribute_evenly=True)
 
     def __iter__(self):
         return iter(self.data)
@@ -98,7 +57,6 @@ class HelpUI:
             self.load_sprite_element(
                 "../resources/ui/spr_dexterity_ui_alt.png"),
             self.load_text_element("Ultra Dexterity"),
-
             self.load_sprite_element("../resources/ui/spr_stamina_ui.png"),
             self.load_text_element("Stamina"),
             self.load_sprite_element("../resources/ui/spr_stamina_ui_alt.png"),
@@ -187,7 +145,7 @@ class Game:
         self.help_ui = HelpUI([self.ui_sprites])
         self.help_ui.show()
 
-        # self.load_ui()
+        self.load_ui()
 
     def load_ui(self):
         top_sprites = []
@@ -230,142 +188,142 @@ class Game:
         )
         top_sprites.append(self.mana_bar_sprite)
 
-        # # coin and gem
-        # text_width = 100
-        # self.coin_ui_sprite = ui.SpriteElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     self.load_texture("../resources/ui/spr_coin_ui.png", 0.75)
-        # )
-        # top_sprites.append(self.coin_ui_sprite)
+        # coin and gem
+        text_width = 100
+        self.coin_ui_sprite = ui.SpriteElement(
+            (0, 0),
+            [self.ui_sprites],
+            self.load_texture("../resources/ui/spr_coin_ui.png", 0.75)
+        )
+        top_sprites.append(self.coin_ui_sprite)
 
-        # self.coin_ui_text = ui.TextElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     "000000",
-        #     min_width=text_width
-        # )
-        # top_sprites.append(self.coin_ui_text)
+        self.coin_ui_text = ui.TextElement(
+            (0, 0),
+            [self.ui_sprites],
+            "000000",
+            min_width=text_width
+        )
+        top_sprites.append(self.coin_ui_text)
 
-        # self.gem_ui_sprite = ui.SpriteElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     self.load_texture("../resources/ui/spr_gem_ui.png", 0.75)
-        # )
-        # top_sprites.append(self.gem_ui_sprite)
+        self.gem_ui_sprite = ui.SpriteElement(
+            (0, 0),
+            [self.ui_sprites],
+            self.load_texture("../resources/ui/spr_gem_ui.png", 0.75)
+        )
+        top_sprites.append(self.gem_ui_sprite)
 
-        # self.gem_ui_text = ui.TextElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     "000000",
-        #     min_width=text_width,
-        # )
-        # top_sprites.append(self.gem_ui_text)
+        self.gem_ui_text = ui.TextElement(
+            (0, 0),
+            [self.ui_sprites],
+            "000000",
+            min_width=text_width,
+        )
+        top_sprites.append(self.gem_ui_text)
 
-        # # key
-        # self.key_ui_sprite = ui.SpriteElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     self.load_texture("../resources/ui/spr_key_ui.png", 0.75)
-        # )
-        # bottom_sprites.append(self.key_ui_sprite)
+        # key
+        self.key_ui_sprite = ui.SpriteElement(
+            (0, 0),
+            [self.ui_sprites],
+            self.load_texture("../resources/ui/spr_key_ui.png", 0.75)
+        )
+        bottom_sprites.append(self.key_ui_sprite)
 
-        # # stats
-        # text_width = 30
-        # self.attack_stat_textures = [
-        #     self.load_texture("../resources/ui/spr_attack_ui.png"),
-        #     self.load_texture("../resources/ui/spr_attack_ui_alt.png")
-        # ]
-        # self.attack_stat_sprite = ui.SpriteElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     self.attack_stat_textures[0]
-        # )
-        # bottom_sprites.append(self.attack_stat_sprite)
+        # stats
+        text_width = 30
+        self.attack_stat_textures = [
+            self.load_texture("../resources/ui/spr_attack_ui.png"),
+            self.load_texture("../resources/ui/spr_attack_ui_alt.png")
+        ]
+        self.attack_stat_sprite = ui.SpriteElement(
+            (0, 0),
+            [self.ui_sprites],
+            self.attack_stat_textures[0]
+        )
+        bottom_sprites.append(self.attack_stat_sprite)
 
-        # self.attack_ui_text = ui.TextElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     "10",
-        #     min_width=text_width,
-        # )
-        # bottom_sprites.append(self.attack_ui_text)
+        self.attack_ui_text = ui.TextElement(
+            (0, 0),
+            [self.ui_sprites],
+            "10",
+            min_width=text_width,
+        )
+        bottom_sprites.append(self.attack_ui_text)
 
-        # self.defence_stat_textures = [
-        #     self.load_texture("../resources/ui/spr_defense_ui.png"),
-        #     self.load_texture("../resources/ui/spr_defense_ui_alt.png")
-        # ]
-        # self.defence_stat_sprite = ui.SpriteElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     self.defence_stat_textures[0]
-        # )
-        # bottom_sprites.append(self.defence_stat_sprite)
+        self.defence_stat_textures = [
+            self.load_texture("../resources/ui/spr_defense_ui.png"),
+            self.load_texture("../resources/ui/spr_defense_ui_alt.png")
+        ]
+        self.defence_stat_sprite = ui.SpriteElement(
+            (0, 0),
+            [self.ui_sprites],
+            self.defence_stat_textures[0]
+        )
+        bottom_sprites.append(self.defence_stat_sprite)
 
-        # self.defence_ui_text = ui.TextElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     "10",
-        #     min_width=text_width,
-        # )
-        # bottom_sprites.append(self.defence_ui_text)
+        self.defence_ui_text = ui.TextElement(
+            (0, 0),
+            [self.ui_sprites],
+            "10",
+            min_width=text_width,
+        )
+        bottom_sprites.append(self.defence_ui_text)
 
-        # self.strength_stat_textures = [
-        #     self.load_texture("../resources/ui/spr_strength_ui.png"),
-        #     self.load_texture("../resources/ui/spr_strength_ui_alt.png")
-        # ]
-        # self.strength_stat_sprite = ui.SpriteElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     self.strength_stat_textures[0]
-        # )
-        # bottom_sprites.append(self.strength_stat_sprite)
+        self.strength_stat_textures = [
+            self.load_texture("../resources/ui/spr_strength_ui.png"),
+            self.load_texture("../resources/ui/spr_strength_ui_alt.png")
+        ]
+        self.strength_stat_sprite = ui.SpriteElement(
+            (0, 0),
+            [self.ui_sprites],
+            self.strength_stat_textures[0]
+        )
+        bottom_sprites.append(self.strength_stat_sprite)
 
-        # self.strength_ui_text = ui.TextElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     "10",
-        #     min_width=text_width,
-        # )
-        # bottom_sprites.append(self.strength_ui_text)
+        self.strength_ui_text = ui.TextElement(
+            (0, 0),
+            [self.ui_sprites],
+            "10",
+            min_width=text_width,
+        )
+        bottom_sprites.append(self.strength_ui_text)
 
-        # self.dexterity_stat_textures = [
-        #     self.load_texture("../resources/ui/spr_dexterity_ui.png"),
-        #     self.load_texture("../resources/ui/spr_dexterity_ui_alt.png")
-        # ]
-        # self.dexterity_stat_sprite = ui.SpriteElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     self.dexterity_stat_textures[0]
-        # )
-        # bottom_sprites.append(self.dexterity_stat_sprite)
+        self.dexterity_stat_textures = [
+            self.load_texture("../resources/ui/spr_dexterity_ui.png"),
+            self.load_texture("../resources/ui/spr_dexterity_ui_alt.png")
+        ]
+        self.dexterity_stat_sprite = ui.SpriteElement(
+            (0, 0),
+            [self.ui_sprites],
+            self.dexterity_stat_textures[0]
+        )
+        bottom_sprites.append(self.dexterity_stat_sprite)
 
-        # self.dexterity_ui_text = ui.TextElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     "10",
-        #     min_width=text_width,
-        # )
-        # bottom_sprites.append(self.dexterity_ui_text)
+        self.dexterity_ui_text = ui.TextElement(
+            (0, 0),
+            [self.ui_sprites],
+            "10",
+            min_width=text_width,
+        )
+        bottom_sprites.append(self.dexterity_ui_text)
 
-        # self.stamina_stat_textures = [
-        #     self.load_texture("../resources/ui/spr_stamina_ui.png"),
-        #     self.load_texture("../resources/ui/spr_stamina_ui_alt.png")
-        # ]
-        # self.stamina_stat_sprite = ui.SpriteElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     self.stamina_stat_textures[0]
-        # )
-        # bottom_sprites.append(self.stamina_stat_sprite)
+        self.stamina_stat_textures = [
+            self.load_texture("../resources/ui/spr_stamina_ui.png"),
+            self.load_texture("../resources/ui/spr_stamina_ui_alt.png")
+        ]
+        self.stamina_stat_sprite = ui.SpriteElement(
+            (0, 0),
+            [self.ui_sprites],
+            self.stamina_stat_textures[0]
+        )
+        bottom_sprites.append(self.stamina_stat_sprite)
 
-        # self.stamina_ui_text = ui.TextElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     "10",
-        #     min_width=text_width,
-        # )
-        # bottom_sprites.append(self.stamina_ui_text)
+        self.stamina_ui_text = ui.TextElement(
+            (0, 0),
+            [self.ui_sprites],
+            "10",
+            min_width=text_width,
+        )
+        bottom_sprites.append(self.stamina_ui_text)
 
         # top left layout
         health_bar = [
@@ -380,84 +338,82 @@ class Game:
 
         layout.align_middle_hort(bars)
         layout.align_middle_vert(bars)
+        layout.stack_vert([health_bar, mana_bar], cols=1, seperator=3)
+        layout.align_middle_vert([self.player_ui_sprite, bars])
+        layout.stack_hort([self.player_ui_sprite, bars], seperator=20)
+        layout.move([self.player_ui_sprite, bars], 5, 5)
 
-        layout.right_justify(health_bar, pygame.Rect(100, 100, 200, 200))
+        # top center layout
+        inventory = [
+            self.coin_ui_sprite,
+            self.coin_ui_text,
+            self.gem_ui_sprite,
+            self.gem_ui_text
+        ]
 
-        # layout.stack_vert([health_bar, mana_bar])  # fix
-        #layout.stack_hort([self.player_ui_sprite, bars], 10)
-        #layout.align_middle_vert([self.player_ui_sprite, bars])
-        # layout.move(10, 10, self.player_ui_sprite, bars)
+        layout.align_middle_vert(inventory)
+        layout.stack_hort(inventory)
+        layout.center_hort(inventory, layout.screen_rect())
+        layout.move(inventory, 0, 5)
 
-        # # top center layout
-        # inventory = [
-        #     self.coin_ui_sprite,
-        #     self.coin_ui_text,
-        #     self.gem_ui_sprite,
-        #     self.gem_ui_text
-        # ]
+        # bottom center layout
+        stats = [
+            self.attack_stat_sprite,
+            self.attack_ui_text,
+            self.defence_stat_sprite,
+            self.defence_ui_text,
+            self.strength_stat_sprite,
+            self.strength_ui_text,
+            self.dexterity_stat_sprite,
+            self.dexterity_ui_text,
+            self.stamina_stat_sprite,
+            self.stamina_ui_text,
+        ]
 
-        # layout.align_middle_vert(*inventory)
-        # layout.stack_hort(10, *inventory)
-        # layout.center_screen_hort(*inventory)
-        # layout.move(0, 10, *inventory)
+        layout.stack_hort(stats, seperator=10)
+        layout.align_middle_vert(stats)
+        layout.justify_bottom(stats, layout.screen_rect())
+        layout.center_hort(stats, layout.screen_rect())
+        layout.move(stats, 0, -10)
 
-        # # bottom center layout
-        # stats = [
-        #     self.attack_stat_sprite,
-        #     self.attack_ui_text,
-        #     self.defence_stat_sprite,
-        #     self.defence_ui_text,
-        #     self.strength_stat_sprite,
-        #     self.strength_ui_text,
-        #     self.dexterity_stat_sprite,
-        #     self.dexterity_ui_text,
-        #     self.stamina_stat_sprite,
-        #     self.stamina_ui_text,
-        # ]
+        # bottom right layout
+        layout.justify_right([self.key_ui_sprite], layout.screen_rect())
+        layout.justify_bottom([self.key_ui_sprite], layout.screen_rect())
+        layout.move([self.key_ui_sprite], -5, -5)
 
-        # layout.stack_hort(5, *stats)
-        # layout.align_middle_vert(*stats)
-        # layout.bottom_screen_justify(*stats)
-        # layout.center_screen_hort(*stats)
-        # layout.move(0, -10, *stats)
+        # top strip
+        top_rect = pygame.rect.Rect(top_sprites[0].rect)
+        for top_sprite in top_sprites:
+            top_rect = top_rect.union(top_sprite.rect)
 
-        # # bottom right layout
-        # layout.right_screen_justify(self.key_ui_sprite)
-        # layout.bottom_screen_justify(self.key_ui_sprite)
+        top_ui_strip_texture = pygame.Surface(
+            (self.display_surface.get_width(), top_rect.top + top_rect.height),
+            pygame.SRCALPHA,
+            32
+        )
+        top_ui_strip_texture.fill((255, 255, 255, 25))
+        self.top_ui_strip_sprite = ui.SpriteElement(
+            (0, 0),
+            [self.ui_sprites],
+            top_ui_strip_texture
+        )
 
-        # # top strip
-        # top_rect = pygame.rect.Rect(top_sprites[0].rect)
-        # for top_sprite in top_sprites:
-        #     top_rect = top_rect.union(top_sprite.rect)
+        # bottom strip
+        bottom_rect = pygame.rect.Rect(bottom_sprites[0].rect)
+        for bottom_sprite in bottom_sprites:
+            bottom_rect = bottom_rect.union(bottom_sprite.rect)
 
-        # top_ui_strip_texture = pygame.Surface(
-        #     (self.display_surface.get_width(), top_rect.top + top_rect.height),
-        #     pygame.SRCALPHA,
-        #     32
-        # )
-        # top_ui_strip_texture.fill((255, 255, 255, 25))
-        # self.top_ui_strip_sprite = ui.SpriteElement(
-        #     (0, 0),
-        #     [self.ui_sprites],
-        #     top_ui_strip_texture
-        # )
-
-        # # bottom strip
-        # bottom_rect = pygame.rect.Rect(bottom_sprites[0].rect)
-        # for bottom_sprite in bottom_sprites:
-        #     bottom_rect = bottom_rect.union(bottom_sprite.rect)
-
-        # bottom_ui_strip_texture = pygame.Surface(
-        #     (self.display_surface.get_width(), bottom_rect.height),
-        #     pygame.SRCALPHA,
-        #     32
-        # )
-        # bottom_ui_strip_texture.fill((255, 255, 255, 25))
-        # self.bottom_ui_strip_sprite = ui.SpriteElement(
-        #     (0, bottom_rect.top),
-        #     [self.ui_sprites],
-        #     bottom_ui_strip_texture
-        # )
+        bottom_ui_strip_texture = pygame.Surface(
+            (self.display_surface.get_width(), bottom_rect.top),
+            pygame.SRCALPHA,
+            32
+        )
+        bottom_ui_strip_texture.fill((255, 255, 255, 25))
+        self.bottom_ui_strip_sprite = ui.SpriteElement(
+            (0, bottom_rect.top),
+            [self.ui_sprites],
+            bottom_ui_strip_texture
+        )
 
     def run(self):
         self.player.update()
