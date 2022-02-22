@@ -1,7 +1,6 @@
-from traceback import print_tb
-from level import Level
-from player import Player
 from texture_manager import TextureManager
+from state_machine import StateMachine
+from playing_state import PlayingState
 from settings import *
 from support import *
 import groups
@@ -10,142 +9,16 @@ import ui
 import pygame
 
 
-class GridUI:
-    def __init__(self, data, cols, groups):
-        self.data = data
-        self.packed_data = [self.data[i:i+cols]
-                            for i in range(0, len(self.data), cols)]
-        self.cols = cols
-        self.groups = groups
-
-    def left_justify(self, indicies):
-        layout.stack_hort(self.data, cols=4, weights={
-                          0: 10, 1: 30, 2: 40, 3: 40})
-        layout.stack_vert(self.data, cols=4, distribute_evenly=True)
-
-    def __iter__(self):
-        return iter(self.data)
-
-
-class HelpUI:
-    def __init__(self, groups):
-        self.groups = groups
-        self.col1 = []
-        self.all_sprites = []
-        self.hort_space = 10
-
-    def show(self):
-        postion = (0, 0)
-        col0_unpack = [
-            self.load_sprite_element(
-                "../resources/ui/spr_attack_ui.png"),
-            self.load_text_element("Attack"),
-            self.load_sprite_element(
-                "../resources/ui/spr_attack_ui_alt.png"),
-            self.load_text_element("Ultra Attack"),
-            self.load_sprite_element("../resources/ui/spr_defense_ui.png"),
-            self.load_text_element("Defence"),
-            self.load_sprite_element("../resources/ui/spr_defense_ui_alt.png"),
-            self.load_text_element("Ultra Defence"),
-            self.load_sprite_element("../resources/ui/spr_strength_ui.png"),
-            self.load_text_element("Strength"),
-            self.load_sprite_element(
-                "../resources/ui/spr_strength_ui_alt.png"),
-            self.load_text_element("Ultra Strength"),
-            self.load_sprite_element("../resources/ui/spr_dexterity_ui.png"),
-            self.load_text_element("Dexterity"),
-            self.load_sprite_element(
-                "../resources/ui/spr_dexterity_ui_alt.png"),
-            self.load_text_element("Ultra Dexterity"),
-            self.load_sprite_element("../resources/ui/spr_stamina_ui.png"),
-            self.load_text_element("Stamina"),
-            self.load_sprite_element("../resources/ui/spr_stamina_ui_alt.png"),
-            self.load_text_element("Ultra Stamina"),
-        ]
-
-        grid = GridUI(col0_unpack, 4, self.groups)
-        grid.left_justify({1: 15, 2: 0, 3: 0})
-
-        #col0 = [col0_unpack[i:i+2] for i in range(0, len(col0_unpack), 2)]
-
-        # layout.align_middle_vert(*col0_unpack)
-        # layout.left_justify(col0, 15)
-        # layout.stack_vert(
-        #     0,
-        #     *col0,
-        #     rules=[layout.stack_vert_evenly_justify_rule]
-        # )
-
-        # self.col1.append([
-        #     self.load_sprite_element("../resources/ui/spr_attack_ui_alt.png"),
-        #     self.load_text_element("Attack Power Up")
-        # ])
-        # self.col1.append([
-        #     self.load_sprite_element("../resources/ui/spr_defense_ui_alt.png"),
-        #     self.load_text_element("Defence Power Up")
-        # ])
-        # self.col1.append([
-        #     self.load_sprite_element("../resources/ui/spr_strength_ui_alt.png"),
-        #     self.load_text_element("Strength Power Up")
-        # ])
-        # self.col1.append([
-        #     self.load_sprite_element("../resources/ui/spr_dexterity_ui_alt.png"),
-        #     self.load_text_element("Dexterity Power Up")
-        # ])
-        # self.col1.append([
-        #     self.load_sprite_element("../resources/ui/spr_stamina_ui_alt.png"),
-        #     self.load_text_element("Stamina Power Up")
-        # ])
-
-    def hide(self):
-        pass
-
-    # --------------
-    # Helper Methods
-    # --------------
-    def load_sprite_element(self, filepath, scale=1, position=(0, 0)):
-        return ui.SpriteElement(
-            position,
-            self.groups,
-            self.load_texture(filepath, scale)
-        )
-
-    def load_text_element(self, text, position=(0, 0)):
-        return ui.TextElement(
-            position,
-            self.groups,
-            text
-        )
-
-    def load_texture(self, filepath, scale):
-        texture_id = TextureManager.add_texture(filepath)
-        texture = TextureManager.get_texture(texture_id)
-        if scale != 1:
-            dimension = pygame.Vector2(texture.get_rect().size) * scale
-            texture = pygame.transform.scale(texture, dimension)
-        return texture
-
-
 class Game:
     def __init__(self):
         self.display_surface = pygame.display.get_surface()
-        self.visible_sprites = groups.YSortCameraGroup()
-        self.obstacle_sprites = pygame.sprite.Group()
         self.ui_sprites = pygame.sprite.Group()
         self.ui_debug_sprites = groups.BoundingBoxUIDebugGroup()
 
-        self.level = Level(self.visible_sprites, self.obstacle_sprites)
-
-        self.player = Player(
-            (TILE_SIZE, TILE_SIZE),
-            [self.visible_sprites],
-            self.obstacle_sprites
-        )
-
-        self.help_ui = HelpUI([self.ui_sprites])
-        self.help_ui.show()
-
         self.load_ui()
+        self.state_machine = StateMachine()
+        self.state_machine.add_state(GAME_STATE.PLAYING, PlayingState(self))
+        self.state_machine.set_state(GAME_STATE.PLAYING)
 
     def load_ui(self):
         top_sprites = []
@@ -416,10 +289,9 @@ class Game:
         )
 
     def run(self):
-        self.player.update()
-        self.visible_sprites.custom_draw(self.player)
+        self.state_machine.update()
+        self.state_machine.render()
         self.ui_sprites.draw(self.display_surface)
-        self.ui_debug_sprites.custom_draw()
 
     # --------------
     # Helper Methods

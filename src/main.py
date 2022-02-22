@@ -7,8 +7,8 @@ from settings import *
 class Application:
     def __init__(self):
 
-        # general setup
-        pygame.init()
+        # general setup   
+        pygame.init()     
         self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
         pygame.display.set_caption('Dungeon Crawler')
         self.clock = pygame.time.Clock()
@@ -28,6 +28,6 @@ class Application:
             self.clock.tick(FPS)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':    
     app = Application()
     app.run()

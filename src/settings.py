@@ -45,3 +45,7 @@ class ANIMATION_STATE(Enum):
     IDLE_DOWN = auto()
     IDLE_RIGHT = auto()
     IDLE_LEFT = auto()
+
+
+class GAME_STATE(Enum):
+    PLAYING = 0

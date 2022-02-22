@@ -1,7 +1,5 @@
 import pygame
 
-font = pygame.font.Font(None, 30)
-
 
 class SpriteElement(pygame.sprite.Sprite):
     def __init__(self, position, groups, surface):
@@ -13,6 +11,7 @@ class SpriteElement(pygame.sprite.Sprite):
 class TextElement(pygame.sprite.Sprite):
     def __init__(self, position, groups, text, min_width=-1, min_height=-1, centerx=False, centery=False):
         super().__init__(groups)
+        font = pygame.font.Font(None, 30)
         self.text = font.render(text, True, 'White')
         self.rect = self.text.get_rect(topleft=position)
 

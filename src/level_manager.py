@@ -4,9 +4,10 @@ from support import *
 from debug import debug
 from tile import Tile
 from texture_manager import TextureManager
+from ui import Box
 
 
-class Level:
+class LevelManager:
     def __init__(self, visible_sprites, obstacle_sprites):
         self.visible_sprites = visible_sprites
         self.obstacle_sprites = obstacle_sprites
@@ -17,6 +18,9 @@ class Level:
 
         # sprite setup
         self.terrain_map = self.create_map()
+        self.toches = [
+            Box(pygame.Rect(0, 0, 10, 10), [])
+        ]
 
     def create_map(self):
         self.add_tile(
@@ -100,14 +104,22 @@ class Level:
             TILE.WALL_DOOR_UNLOCKED.value
         )
 
+        # map state
         terrain_map = import_map_layout('../resources/data/level_data.txt')
-        for row_index, row in enumerate(terrain_map):
-            for col_index, col in enumerate(row):
-                x = col_index * TILE_SIZE
-                y = row_index * TILE_SIZE
-                texture_id = self.texture_ids[col]
+        self.rows = len(terrain_map)
+        self.cols = len(terrain_map[0])
+        self.tile_size = TILE_SIZE
+        self.width = self.cols * self.tile_size
+        self.height = self.rows * self.tile_size
+
+        for row in range(self.rows):
+            for col in range(self.cols):
+                x = col * self.tile_size
+                y = row * self.tile_size
+                index = terrain_map[row][col]
+                texture_id = self.texture_ids[index]
                 surface = TextureManager.get_texture(texture_id)
-                if self.is_solid(col):
+                if self.is_solid(index):
                     Tile((x, y), [self.visible_sprites,
                          self.obstacle_sprites], surface)
                 else:
