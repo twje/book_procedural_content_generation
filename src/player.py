@@ -1,8 +1,26 @@
-from msilib import sequence
 import pygame
 from settings import *
 from animation import Animation
 from texture_manager import TextureManager
+from ui import SpriteElement
+
+
+# class ProjectileCrosshair(pygame.sprite.Sprite):
+#     def __init__(self, render_group):
+#         super().__init__([render_group])
+#         self.render_group = render_group
+#         texture_id = TextureManager.add_texture("../resources/ui/spr_aim.png")
+#         self.aim_sprite = SpriteElement(
+#             (0, 0),
+#             [],
+#             TextureManager.get_texture(texture_id)
+#         )
+
+#     def update(self):
+#         x, y = pygame.mouse.get_pos()
+#         renderer = self.render_group.renderer
+#         position = renderer.world_coordinates((x, y))
+#         self.aim_sprite.rect.center = pygame.Vector2(position)
 
 
 class Player(pygame.sprite.Sprite):
@@ -63,6 +81,16 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animation.get_frame()
         self.rect = self.image.get_rect(topleft=position)
         self.hitbox = self.rect.inflate(0, 0)
+        self.attacking = False
+        self.attack_delta = pygame.time.get_ticks()
+
+        # aim sprite
+        texture_id = TextureManager.add_texture("../resources/ui/spr_aim.png")
+        self.aim_sprite = SpriteElement(
+            (0, 0),
+            [],
+            TextureManager.get_texture(texture_id)
+        )
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -85,6 +113,20 @@ class Player(pygame.sprite.Sprite):
             self.animation_sequence = ANIMATION_STATE.WALK_LEFT.value
         else:
             self.direction.x = 0
+
+        # attack input
+        elapsed_attack_time = pygame.time.get_ticks() - self.attack_delta
+        if elapsed_attack_time > 255:
+            if keys[pygame.K_SPACE]:
+                self.attacking = True
+
+    def is_attacking(self):
+        if self.attacking:
+            self.attacking = False
+            self.attack_delta = pygame.time.get_ticks()
+            return True
+        else:
+            return False
 
     def get_status(self):
         if self.direction.x == 0 and self.direction.y == 0:
@@ -123,8 +165,14 @@ class Player(pygame.sprite.Sprite):
         self.animation.update()
         self.image = self.animation.get_frame()
 
-    def update(self):
+    def aim(self, camera):
+        x, y = pygame.mouse.get_pos()
+        position = camera.world_coordinates((x, y))
+        self.aim_sprite.rect.center = pygame.Vector2(position)
+
+    def update(self, camera):
         self.input()
         self.get_status()
         self.animate()
+        self.aim(camera)
         self.move(self.speed)

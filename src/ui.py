@@ -1,14 +1,15 @@
 import pygame
+from game_object import GameObject
 
 
-class SpriteElement(pygame.sprite.Sprite):
+class SpriteElement(GameObject):
     def __init__(self, position, groups, surface):
         super().__init__(groups)
         self.image = surface
         self.rect = self.image.get_rect(topleft=position)
 
 
-class TextElement(pygame.sprite.Sprite):
+class TextElement(GameObject):
     def __init__(self, position, groups, text, min_width=-1, min_height=-1, centerx=False, centery=False):
         super().__init__(groups)
         font = pygame.font.Font(None, 30)
@@ -32,7 +33,7 @@ class TextElement(pygame.sprite.Sprite):
         self.image.blit(self.text, (offset.x, offset.y))
 
 
-class Box(pygame.sprite.Sprite):
+class Box(GameObject):
     def __init__(self, rect, groups):
         super().__init__(groups)
         self.rect = rect

@@ -1,20 +1,19 @@
 import pygame
 from settings import *
 from support import *
-from debug import debug
 from tile import Tile
 from texture_manager import TextureManager
 from ui import Box
 
 
 class LevelManager:
-    def __init__(self, visible_sprites, obstacle_sprites):
-        self.visible_sprites = visible_sprites
+    def __init__(self, obstacle_sprites):
         self.obstacle_sprites = obstacle_sprites
         self.display_surface = pygame.display.get_surface()
 
         # tiles
         self.texture_ids = {}
+        self.tiles = []
 
         # sprite setup
         self.terrain_map = self.create_map()
@@ -111,6 +110,7 @@ class LevelManager:
         self.tile_size = TILE_SIZE
         self.width = self.cols * self.tile_size
         self.height = self.rows * self.tile_size
+        self.layers = 1
 
         for row in range(self.rows):
             for col in range(self.cols):
@@ -120,10 +120,10 @@ class LevelManager:
                 texture_id = self.texture_ids[index]
                 surface = TextureManager.get_texture(texture_id)
                 if self.is_solid(index):
-                    Tile((x, y), [self.visible_sprites,
-                         self.obstacle_sprites], surface)
+                    tile = Tile((x, y), [self.obstacle_sprites], surface)
                 else:
-                    Tile((x, y), [self.visible_sprites], surface)
+                    tile = Tile((x, y), [], surface)
+                self.tiles.append(tile)
 
         return terrain_map
 
@@ -133,3 +133,10 @@ class LevelManager:
     def add_tile(self, filepath, tile_type):
         texture_id = TextureManager.add_texture(filepath)
         self.texture_ids[tile_type] = texture_id
+
+    def render_layer(self, renderer, layer):
+        for row in range(self.rows):
+            for col in range(self.cols):
+                index = col + row * self.cols
+                tile = self.tiles[index]
+                renderer.render(tile)

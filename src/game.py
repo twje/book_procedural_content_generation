@@ -19,6 +19,7 @@ class Game:
         self.state_machine = StateMachine()
         self.state_machine.add_state(GAME_STATE.PLAYING, PlayingState(self))
         self.state_machine.set_state(GAME_STATE.PLAYING)
+        pygame.mouse.set_visible(False)
 
     def load_ui(self):
         top_sprites = []
