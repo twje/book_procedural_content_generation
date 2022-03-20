@@ -21,6 +21,14 @@ class Game:
         self.state_machine.set_state(GAME_STATE.PLAYING)
         pygame.mouse.set_visible(False)
 
+    def update_health_bar(self, percent):
+        self.health_bar_sprite.set_width(percent)
+
+    def update_mana_bar(self, percent):
+        self.mana_bar_sprite.set_width(percent)
+
+    
+
     def load_ui(self):
         top_sprites = []
         bottom_sprites = []
@@ -48,19 +56,21 @@ class Game:
         top_sprites.append(self.mana_bar_outline_sprite)
 
         # bars
-        self.health_bar_sprite = ui.SpriteElement(
+        self.health_bar_sprite = ui.Bar(
             (0, 0),
             [self.ui_sprites],
             self.load_texture("../resources/ui/spr_health_bar.png")
         )
         top_sprites.append(self.health_bar_sprite)
+        self.health_bar_width = self.health_bar_sprite.image.get_width()
 
-        self.mana_bar_sprite = ui.SpriteElement(
+        self.mana_bar_sprite = ui.Bar(
             (0, 0),
             [self.ui_sprites],
             self.load_texture("../resources/ui/spr_mana_bar.png")
         )
         top_sprites.append(self.mana_bar_sprite)
+        self.mana_bar_width = self.mana_bar_sprite.image.get_width()
 
         # coin and gem
         text_width = 100

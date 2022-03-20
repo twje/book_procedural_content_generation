@@ -2,28 +2,11 @@ import pygame
 from settings import *
 from animation import Animation
 from texture_manager import TextureManager
+from game_object import GameObject
 from ui import SpriteElement
 
 
-# class ProjectileCrosshair(pygame.sprite.Sprite):
-#     def __init__(self, render_group):
-#         super().__init__([render_group])
-#         self.render_group = render_group
-#         texture_id = TextureManager.add_texture("../resources/ui/spr_aim.png")
-#         self.aim_sprite = SpriteElement(
-#             (0, 0),
-#             [],
-#             TextureManager.get_texture(texture_id)
-#         )
-
-#     def update(self):
-#         x, y = pygame.mouse.get_pos()
-#         renderer = self.render_group.renderer
-#         position = renderer.world_coordinates((x, y))
-#         self.aim_sprite.rect.center = pygame.Vector2(position)
-
-
-class Player(pygame.sprite.Sprite):
+class Player(GameObject):
     def __init__(self, position, groups, obstacle_sprites):
         super().__init__(groups)
         self.obstacle_sprites = obstacle_sprites
@@ -91,6 +74,26 @@ class Player(pygame.sprite.Sprite):
             [],
             TextureManager.get_texture(texture_id)
         )
+
+        # stats
+        self.health = 100
+        self.max_health = 100
+        self.mana = 50
+        self.max_mana = 50
+
+    def add_health(self, value):
+        self.health = max(0, self.health + value)
+
+    def add_mana(self, value):
+        self.mana = max(0, self.mana + value)
+
+    @property
+    def health_percentage(self):
+        return self.health/self.max_health
+
+    @property
+    def mana_percentage(self):
+        return self.mana/self.max_mana
 
     def input(self):
         keys = pygame.key.get_pressed()

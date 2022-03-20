@@ -1,3 +1,4 @@
+from cmath import rect
 import pygame
 from game_object import GameObject
 
@@ -7,6 +8,21 @@ class SpriteElement(GameObject):
         super().__init__(groups)
         self.image = surface
         self.rect = self.image.get_rect(topleft=position)
+
+
+class Bar(GameObject):
+    def __init__(self, position, groups, surface):
+        super().__init__(groups)
+        self.image = surface
+        self.image_copy = surface
+        self.rect = self.image.get_rect(topleft=position)
+
+    def set_width(self, percent):
+        width = self.rect.width * percent
+        self.image = pygame.transform.scale(
+            self.image_copy,
+            (width, self.rect.height)
+        )
 
 
 class TextElement(GameObject):

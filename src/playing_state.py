@@ -55,15 +55,18 @@ class PlayingState:
         self.camera.position = Vector2(self.player.rect.center)
 
     def update_attack(self):
-        # todo - subtratct from mana
         if (self.player.is_attacking()):
-            target = Vector2(self.player.aim_sprite.rect.center)
-            Projectile(
-                self.player.rect.center,
-                [self.player_projectiles, self.entity_sprites],
-                TextureManager.get_texture(self.project_texture_id),
-                target
-            )
+            mana_required = 2
+            if self.player.mana >= mana_required:
+                target = Vector2(self.player.aim_sprite.rect.center)
+                Projectile(
+                    self.player.rect.center,
+                    [self.player_projectiles, self.entity_sprites],
+                    TextureManager.get_texture(self.project_texture_id),
+                    target
+                )
+                self.player.add_mana(-mana_required)
+                self.game.update_mana_bar(self.player.mana_percentage)
 
     def update_light(self):
         self.light_grid.update(self.player)
@@ -76,7 +79,8 @@ class PlayingState:
         for layer in range(self.level_manager.layers):
             self.level_manager.render_layer(self.renderer, layer)
             for sprite in self.entity_sprites.sprites():
-                self.renderer.add_to_render_batch(sprite)
+                if sprite.z == layer:
+                    self.renderer.add_to_render_batch(sprite)
             self.renderer.render_batch()
         self.light_grid.render(self.renderer)
         self.renderer.render(self.player.aim_sprite)
