@@ -27,6 +27,7 @@ class LightGrid:
                 )
 
     def update(self, player):
+        self.update_torches()
         for sprite in self.light_grid_group:
             tile_alpha = 255
             sprite_pos = Vector2(sprite.rect.center)
@@ -35,21 +36,25 @@ class LightGrid:
             if distance < 200:
                 tile_alpha = 0
             else:
-                tile_alpha = (51 * (distance - 200)) / 10
+                tile_alpha = min(255, (51 * (distance - 200)) / 10)
 
-            for torch in self.level_manager.toches:
+            for torch in self.level_manager.torches:
                 distance = sprite_pos.distance_to(torch.rect.center)
                 if distance < 100:
-                    tile_alpha -= (tile_alpha -
-                                   ((tile_alpha / 100) * distance)) * 30
+                    tile_alpha -= (tile_alpha - ((tile_alpha / 100)
+                                   * distance)) *  torch.brightness
 
             if tile_alpha < 0:
                 tile_alpha = 0
 
             sprite.image.set_alpha(tile_alpha)
 
+    def update_torches(self):
+        for torch in self.level_manager.torches:
+            torch.update()
+
     def render(self, renderer):
         for sprite in self.light_grid_group:
             renderer.render(sprite)
-        for torch in self.level_manager.toches:
+        for torch in self.level_manager.torches:
             renderer.render(torch)

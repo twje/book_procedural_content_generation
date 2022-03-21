@@ -2,9 +2,9 @@ import pygame
 from settings import *
 from support import *
 from tile import Tile
-from ui import Box
+from torch import Torch
 from texture_manager import TextureManager
-
+from pygame import Vector2
 
 class LevelManager:
     def __init__(self, obstacle_sprites):
@@ -16,8 +16,8 @@ class LevelManager:
         self.tiles = []
 
         # sprite setup
-        self.terrain_map = self.create_map()
-        self.toches = []        
+        self.torches = pygame.sprite.Group()
+        self.terrain_map = self.create_map()        
 
     def create_map(self):
         self.add_tile(
@@ -122,6 +122,19 @@ class LevelManager:
                 else:
                     tile = Tile((x, y), [], surface)
                 self.tiles.append(tile)
+
+        # torches
+        for torch_pos in (
+            Vector2(3, 9),
+            Vector2(7, 7),
+            Vector2(11, 11),
+            Vector2(13, 15),
+            Vector2(15, 3),
+        ):            
+            pos_x = torch_pos.x * self.tile_size + self.tile_size/2
+            pos_y = torch_pos.y * self.tile_size + self.tile_size/2
+            Torch((pos_x, pos_y), self.torches)
+
 
         return terrain_map
 
