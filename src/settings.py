@@ -1,3 +1,4 @@
+from ctypes.wintypes import POINT
 from enum import Enum
 from enum import auto
 
@@ -49,3 +50,11 @@ class ANIMATION_STATE(Enum):
 
 class GAME_STATE(Enum):
     PLAYING = 0
+
+
+class ITEM_TYPE(Enum):
+    GOLD = 0
+    GEM = auto()
+    KEY = auto()
+    POTION = auto()
+    HEART = auto()

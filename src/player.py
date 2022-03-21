@@ -9,6 +9,7 @@ from ui import SpriteElement
 class Player(GameObject):
     def __init__(self, position, groups, obstacle_sprites):
         super().__init__(groups)
+        self.debug = True
         self.obstacle_sprites = obstacle_sprites
 
         # movement

@@ -3,7 +3,6 @@ from state_machine import StateMachine
 from playing_state import PlayingState
 from settings import *
 from support import *
-import groups
 import layout
 import ui
 import pygame
@@ -13,9 +12,14 @@ class Game:
     def __init__(self):
         self.display_surface = pygame.display.get_surface()
         self.ui_sprites = pygame.sprite.Group()
-        self.ui_debug_sprites = groups.BoundingBoxUIDebugGroup()
-
+        self.top_sprites = pygame.sprite.Group()
+        self.bottom_sprites = pygame.sprite.Group()
+        self.item_values = {
+            ITEM_TYPE.GOLD: "000000",
+            ITEM_TYPE.GEM: "000000",
+        }
         self.load_ui()
+
         self.state_machine = StateMachine()
         self.state_machine.add_state(GAME_STATE.PLAYING, PlayingState(self))
         self.state_machine.set_state(GAME_STATE.PLAYING)
@@ -27,88 +31,86 @@ class Game:
     def update_mana_bar(self, percent):
         self.mana_bar_sprite.set_width(percent)
 
-    def load_ui(self):
-        top_sprites = []
-        bottom_sprites = []
+    def add_gold(self, amount):
+        value = int(self.item_values[ITEM_TYPE.GOLD]) + amount
+        self.item_values[ITEM_TYPE.GOLD] = str(value).rjust(6, "0")
+        self.reset_ui()
 
+    def reset_ui(self):
+        self.ui_sprites.empty()
+        self.top_sprites.empty()
+        self.bottom_sprites.empty()
+        self.load_ui()
+
+    def load_ui(self):
         # player UI sprite
         self.player_ui_sprite = self.load_sprite_element(
             "../resources/ui/spr_warrior_ui.png",
-            [self.ui_sprites]
+            [self.ui_sprites, self.top_sprites]
         )
-        top_sprites.append(self.player_ui_sprite)
 
         # bar outlines
         self.health_bar_outline_sprite = ui.SpriteElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.top_sprites],
             self.load_texture("../resources/ui/spr_bar_outline.png")
         )
-        top_sprites.append(self.health_bar_outline_sprite)
 
         self.mana_bar_outline_sprite = ui.SpriteElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.top_sprites],
             self.load_texture("../resources/ui/spr_bar_outline.png")
         )
-        top_sprites.append(self.mana_bar_outline_sprite)
 
         # bars
         self.health_bar_sprite = ui.Bar(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.top_sprites],
             self.load_texture("../resources/ui/spr_health_bar.png")
         )
-        top_sprites.append(self.health_bar_sprite)
         self.health_bar_width = self.health_bar_sprite.image.get_width()
 
         self.mana_bar_sprite = ui.Bar(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.top_sprites],
             self.load_texture("../resources/ui/spr_mana_bar.png")
         )
-        top_sprites.append(self.mana_bar_sprite)
         self.mana_bar_width = self.mana_bar_sprite.image.get_width()
 
         # coin and gem
         text_width = 100
         self.coin_ui_sprite = ui.SpriteElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.top_sprites],
             self.load_texture("../resources/ui/spr_coin_ui.png", 0.75)
         )
-        top_sprites.append(self.coin_ui_sprite)
 
         self.coin_ui_text = ui.TextElement(
             (0, 0),
-            [self.ui_sprites],
-            "000000",
+            [self.ui_sprites, self.top_sprites],
+            self.item_values[ITEM_TYPE.GOLD],
             min_width=text_width
         )
-        top_sprites.append(self.coin_ui_text)
 
         self.gem_ui_sprite = ui.SpriteElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.top_sprites],
             self.load_texture("../resources/ui/spr_gem_ui.png", 0.75)
         )
-        top_sprites.append(self.gem_ui_sprite)
 
         self.gem_ui_text = ui.TextElement(
             (0, 0),
-            [self.ui_sprites],
-            "000000",
+            [self.ui_sprites, self.top_sprites],
+            self.item_values[ITEM_TYPE.GEM],
             min_width=text_width,
         )
-        top_sprites.append(self.gem_ui_text)
 
         # key
         self.key_ui_sprite = ui.SpriteElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.bottom_sprites],
             self.load_texture("../resources/ui/spr_key_ui.png", 0.75)
         )
-        bottom_sprites.append(self.key_ui_sprite)
 
         # stats
         text_width = 30
@@ -118,18 +120,16 @@ class Game:
         ]
         self.attack_stat_sprite = ui.SpriteElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.bottom_sprites],
             self.attack_stat_textures[0]
         )
-        bottom_sprites.append(self.attack_stat_sprite)
 
         self.attack_ui_text = ui.TextElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.bottom_sprites],
             "10",
             min_width=text_width,
         )
-        bottom_sprites.append(self.attack_ui_text)
 
         self.defence_stat_textures = [
             self.load_texture("../resources/ui/spr_defense_ui.png"),
@@ -137,18 +137,16 @@ class Game:
         ]
         self.defence_stat_sprite = ui.SpriteElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.bottom_sprites],
             self.defence_stat_textures[0]
         )
-        bottom_sprites.append(self.defence_stat_sprite)
 
         self.defence_ui_text = ui.TextElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.bottom_sprites],
             "10",
             min_width=text_width,
         )
-        bottom_sprites.append(self.defence_ui_text)
 
         self.strength_stat_textures = [
             self.load_texture("../resources/ui/spr_strength_ui.png"),
@@ -156,18 +154,16 @@ class Game:
         ]
         self.strength_stat_sprite = ui.SpriteElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.bottom_sprites],
             self.strength_stat_textures[0]
         )
-        bottom_sprites.append(self.strength_stat_sprite)
 
         self.strength_ui_text = ui.TextElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.bottom_sprites],
             "10",
             min_width=text_width,
         )
-        bottom_sprites.append(self.strength_ui_text)
 
         self.dexterity_stat_textures = [
             self.load_texture("../resources/ui/spr_dexterity_ui.png"),
@@ -175,18 +171,16 @@ class Game:
         ]
         self.dexterity_stat_sprite = ui.SpriteElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.bottom_sprites],
             self.dexterity_stat_textures[0]
         )
-        bottom_sprites.append(self.dexterity_stat_sprite)
 
         self.dexterity_ui_text = ui.TextElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.bottom_sprites],
             "10",
             min_width=text_width,
         )
-        bottom_sprites.append(self.dexterity_ui_text)
 
         self.stamina_stat_textures = [
             self.load_texture("../resources/ui/spr_stamina_ui.png"),
@@ -194,18 +188,16 @@ class Game:
         ]
         self.stamina_stat_sprite = ui.SpriteElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.bottom_sprites],
             self.stamina_stat_textures[0]
         )
-        bottom_sprites.append(self.stamina_stat_sprite)
 
         self.stamina_ui_text = ui.TextElement(
             (0, 0),
-            [self.ui_sprites],
+            [self.ui_sprites, self.bottom_sprites],
             "10",
             min_width=text_width,
         )
-        bottom_sprites.append(self.stamina_ui_text)
 
         # top left layout
         health_bar = [
@@ -264,8 +256,8 @@ class Game:
         layout.move([self.key_ui_sprite], -5, -5)
 
         # top strip
-        top_rect = pygame.rect.Rect(top_sprites[0].rect)
-        for top_sprite in top_sprites:
+        top_rect = pygame.rect.Rect(self.top_sprites.sprites()[0].rect)
+        for top_sprite in self.top_sprites:
             top_rect = top_rect.union(top_sprite.rect)
 
         top_ui_strip_texture = pygame.Surface(
@@ -281,8 +273,8 @@ class Game:
         )
 
         # bottom strip
-        bottom_rect = pygame.rect.Rect(bottom_sprites[0].rect)
-        for bottom_sprite in bottom_sprites:
+        bottom_rect = pygame.rect.Rect(self.bottom_sprites.sprites()[0].rect)
+        for bottom_sprite in self.bottom_sprites:
             bottom_rect = bottom_rect.union(bottom_sprite.rect)
 
         bottom_ui_strip_texture = pygame.Surface(

@@ -9,6 +9,7 @@ from projectile import Projectile
 from camera import Camera
 import pygame
 from pygame.sprite import Group
+from gold import Gold
 
 
 class PlayingState:
@@ -16,15 +17,18 @@ class PlayingState:
         self.game = game
         self.display_surface = pygame.display.get_surface()
         self.obstacle_sprites = Group()
-        self.entity_sprites = Group()
+        self.projectiles = Group()
+        self.items = Group()
+        self.enemies = Group()
         self.light_grid_group = Group()
         self.player_projectiles = Group()
         self.camera = Camera()
 
+
         # move
         self.player = Player(
             (TILE_SIZE, TILE_SIZE),
-            [self.entity_sprites],
+            [],
             self.obstacle_sprites
         )
 
@@ -38,17 +42,27 @@ class PlayingState:
         self.project_texture_id = TextureManager.add_texture(
             "../resources/projectiles/spr_sword.png")
 
+        self.populate_level()
+
     def exit(self):
         pass
 
     def start(self):
         pass
 
+    def populate_level(self):
+        Gold((300, 100), [self.items])
+
+    # --------------
+    # update methods
+    # --------------
     def update(self):
         self.player.update(self.camera)
         self.update_camera()
         self.update_attack()
         self.update_light()
+        self.update_items()
+        self.update_enemies()
         self.update_projectiles()
 
     def update_camera(self):
@@ -61,7 +75,7 @@ class PlayingState:
                 target = Vector2(self.player.aim_sprite.rect.center)
                 Projectile(
                     self.player.rect.center,
-                    [self.player_projectiles, self.entity_sprites],
+                    [self.projectiles],
                     TextureManager.get_texture(self.project_texture_id),
                     target
                 )
@@ -71,16 +85,67 @@ class PlayingState:
     def update_light(self):
         self.light_grid.update(self.player)
 
-    def update_projectiles(self):
-        for projectile in self.player_projectiles:
+    def update_items(self):
+        for item in self.items:
+            if not self.player_collised_with_item(item):
+                continue
+            
+            if item.typez == ITEM_TYPE.GOLD:
+                self.game.add_gold(item.value)
+            elif item.typez == ITEM_TYPE.GEM:
+                pass
+            elif item.typez == ITEM_TYPE.KEY:
+                pass
+            elif item.typez == ITEM_TYPE.POTION:
+                pass
+            elif item.typez == ITEM_TYPE.HEART:
+                pass
+            item.kill()
+
+    def player_collised_with_item(self, item):
+        player_pos = Vector2(self.player.rect.center)
+        distance = player_pos.distance_to(item.rect.center)
+        return distance < 40
+
+    def update_enemies(self):
+        pass
+
+    def update_projectiles(self):  # implement
+        for projectile in self.projectiles:
             projectile.update()
 
+    # --------------
+    # render methods
+    # --------------
     def render(self):
         for layer in range(self.level_manager.layers):
-            self.level_manager.render_layer(self.renderer, layer)
-            for sprite in self.entity_sprites.sprites():
-                if sprite.z == layer:
-                    self.renderer.add_to_render_batch(sprite)
+            self.render_level(layer)
+            self.render_player(layer)
+            self.render_entities(layer)
+            self.render_items(layer)
+            self.render_enemies(layer)
             self.renderer.render_batch()
         self.light_grid.render(self.renderer)
         self.renderer.render(self.player.aim_sprite)
+
+    def render_level(self, layer):
+        self.level_manager.render_layer(self.renderer, layer)
+
+    def render_player(self, layer):
+        if layer == self.player.z:
+            self.renderer.add_to_render_batch(self.player)
+
+    def render_entities(self, layer):
+        for sprite in self.projectiles.sprites():
+            if sprite.z == layer:
+                self.renderer.add_to_render_batch(sprite)
+
+    def render_items(self, layer):
+        for sprite in self.items:
+            if sprite.z == layer:
+                self.renderer.add_to_render_batch(sprite)
+
+    def render_enemies(self, layer):
+        for sprite in self.enemies:
+            if sprite.z == layer:
+                self.renderer.add_to_render_batch(sprite)
