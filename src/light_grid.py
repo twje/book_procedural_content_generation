@@ -51,3 +51,5 @@ class LightGrid:
     def render(self, renderer):
         for sprite in self.light_grid_group:
             renderer.render(sprite)
+        for torch in self.level_manager.toches:
+            renderer.render(torch)

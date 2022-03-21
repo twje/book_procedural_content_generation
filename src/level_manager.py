@@ -2,8 +2,8 @@ import pygame
 from settings import *
 from support import *
 from tile import Tile
-from texture_manager import TextureManager
 from ui import Box
+from texture_manager import TextureManager
 
 
 class LevelManager:
@@ -17,9 +17,7 @@ class LevelManager:
 
         # sprite setup
         self.terrain_map = self.create_map()
-        self.toches = [
-            Box(pygame.Rect(0, 0, 10, 10), [])
-        ]
+        self.toches = []        
 
     def create_map(self):
         self.add_tile(

@@ -11,6 +11,18 @@ class Renderer:
     def render(self, sprite):
         offset_pos = self.camera.screen_position(sprite.rect.topleft)
         self.display_surface.blit(sprite.image, offset_pos)
+        if sprite.debug:
+            try:
+                rect = sprite.hitbox.copy()
+            except:
+                rect = sprite.rect.copy()
+            rect.topleft = offset_pos
+            pygame.draw.rect(
+                self.display_surface,
+                (0, 255, 0),
+                rect,
+                1
+            )
 
     def render_batch(self):
         for sprite in sorted(self.sprites, key=lambda sprite: sprite.rect.centery):

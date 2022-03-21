@@ -74,6 +74,7 @@ class Player(GameObject):
             [],
             TextureManager.get_texture(texture_id)
         )
+        self.aim_sprite.debug = True
 
         # stats
         self.health = 100

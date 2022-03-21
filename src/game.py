@@ -27,8 +27,6 @@ class Game:
     def update_mana_bar(self, percent):
         self.mana_bar_sprite.set_width(percent)
 
-    
-
     def load_ui(self):
         top_sprites = []
         bottom_sprites = []
