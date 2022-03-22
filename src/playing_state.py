@@ -53,6 +53,7 @@ class PlayingState:
 
     def populate_level(self):
         self.spawn_items()
+        self.spawn_enemies()
 
     def spawn_items(self):
         for _ in range(MAX_ITEM_SPAWN_COUNT):
@@ -60,12 +61,15 @@ class PlayingState:
                 item_type = random.choice([Gold, Gem])
                 self.spawn_item(item_type)
 
-    def spawn_item(self, item_type, position = None):
+    def spawn_item(self, item_type, position=None):
         if position is None:
             spawn_location = self.level_manager.get_random_spawn_location()
         else:
             spawn_location = position
         item_type(spawn_location, [self.items])
+
+    def spawn_enemies(self):
+        pass
 
     # --------------
     # update methods

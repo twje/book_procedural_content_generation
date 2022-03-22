@@ -5,9 +5,10 @@ from animation import Animation
 from texture_manager import TextureManager
 from game_object import GameObject
 from ui import SpriteElement
+from entity import Entity
 
 
-class Player(GameObject):
+class Player(Entity):
     def __init__(self, position, groups, obstacle_sprites):
         super().__init__(groups)
         self.debug = True
@@ -88,13 +89,11 @@ class Player(GameObject):
         self.stat_points = 50
         bias = [random.random() for _ in range(5)]
         total = sum(bias)
-        self.stats = {
-            STAT_TYPE.ATTACK: round(self.stat_points * (bias[0] / total)),
-            STAT_TYPE.DEFENCE: round(self.stat_points * (bias[1] / total)),
-            STAT_TYPE.STRENGTH: round(self.stat_points * (bias[2] / total)),
-            STAT_TYPE.DEXTERITY: round(self.stat_points * (bias[3] / total)),
-            STAT_TYPE.SETMINA: round(self.stat_points * (bias[4] / total))
-        }
+        self.attack = round(self.stat_points * (bias[0] / total))
+        self.defence = round(self.stat_points * (bias[1] / total))
+        self.strength = round(self.stat_points * (bias[2] / total))
+        self.dexterity = round(self.stat_points * (bias[3] / total))
+        self.stemina = round(self.stat_points * (bias[4] / total))
 
     # properties
 
