@@ -52,11 +52,20 @@ class PlayingState:
         pass
 
     def populate_level(self):
-        if random.randint(0, 1):
-            Gold((300, 100), [self.items])
+        self.spawn_items()
 
-        if random.randint(0, 1):
-            Gem((200, 200), [self.items])
+    def spawn_items(self):
+        for _ in range(MAX_ITEM_SPAWN_COUNT):
+            if random.randint(0, 1):
+                item_type = random.choice([Gold, Gem])
+                self.spawn_item(item_type)
+
+    def spawn_item(self, item_type, position = None):
+        if position is None:
+            spawn_location = self.level_manager.get_random_spawn_location()
+        else:
+            spawn_location = position
+        item_type(spawn_location, [self.items])
 
     # --------------
     # update methods
@@ -91,6 +100,7 @@ class PlayingState:
         self.light_grid.update(self.player)
 
     def update_items(self):
+        refresh_ui = False
         for item in self.items:
             item.update()
             if not self.player_collised_with_item(item):
@@ -98,8 +108,10 @@ class PlayingState:
 
             if item.typez == ITEM_TYPE.GOLD:
                 self.game.add_gold(item.value)
+                refresh_ui = True
             elif item.typez == ITEM_TYPE.GEM:
                 self.game.add_gem(item.value)
+                refresh_ui = True
             elif item.typez == ITEM_TYPE.KEY:
                 pass
             elif item.typez == ITEM_TYPE.POTION:
@@ -107,6 +119,9 @@ class PlayingState:
             elif item.typez == ITEM_TYPE.HEART:
                 pass
             item.kill()
+
+        if refresh_ui:
+            self.game.reset_ui()
 
     def player_collised_with_item(self, item):
         player_pos = Vector2(self.player.rect.center)

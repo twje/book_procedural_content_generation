@@ -53,7 +53,6 @@ class Game:
     def add_currency(self, currency_type, amount):
         value = int(self.item_values[currency_type]) + amount
         self.item_values[currency_type] = str(value).rjust(6, "0")
-        self.reset_ui()
 
     def reset_ui(self):
         self.ui_sprites.empty()

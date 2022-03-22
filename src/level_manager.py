@@ -1,3 +1,4 @@
+import random
 import pygame
 from settings import *
 from support import *
@@ -5,6 +6,7 @@ from tile import Tile
 from torch import Torch
 from texture_manager import TextureManager
 from pygame import Vector2
+
 
 class LevelManager:
     def __init__(self, obstacle_sprites):
@@ -17,7 +19,7 @@ class LevelManager:
 
         # sprite setup
         self.torches = pygame.sprite.Group()
-        self.terrain_map = self.create_map()        
+        self.terrain_map = self.create_map()
 
     def create_map(self):
         self.add_tile(
@@ -118,9 +120,10 @@ class LevelManager:
                 texture_id = self.texture_ids[index]
                 surface = TextureManager.get_texture(texture_id)
                 if self.is_solid(index):
-                    tile = Tile((x, y), [self.obstacle_sprites], surface)
+                    tile = Tile(index, (x, y), [
+                                self.obstacle_sprites], surface)
                 else:
-                    tile = Tile((x, y), [], surface)
+                    tile = Tile(index, (x, y), [], surface)
                 self.tiles.append(tile)
 
         # torches
@@ -130,16 +133,38 @@ class LevelManager:
             Vector2(11, 11),
             Vector2(13, 15),
             Vector2(15, 3),
-        ):            
+        ):
             pos_x = torch_pos.x * self.tile_size + self.tile_size/2
             pos_y = torch_pos.y * self.tile_size + self.tile_size/2
             Torch((pos_x, pos_y), self.torches)
-
 
         return terrain_map
 
     def is_solid(self, tile_type):
         return tile_type != TILE.FLOOR.value and tile_type != TILE.FLOOR_ALT.value and tile_type != TILE.WALL_DOOR_UNLOCKED
+
+    def is_floor(self, tile_x, tile_y):
+        index = tile_x + tile_y * self.cols
+        tile_type = self.tiles[index].tile_type
+        return tile_type == TILE.FLOOR.value or tile_type == TILE.FLOOR_ALT.value
+
+    def get_random_spawn_location(self):
+        col_index = 0
+        row_index = 0
+        while not self.is_floor(col_index, row_index):
+            col_index = random.randint(0, self.cols - 1)
+            row_index = random.randint(0, self.rows - 1)
+
+        tile_location = self.get_actual_tile_location(col_index, row_index)
+        tile_location.x += random.randint(-10, 10)
+        tile_location.y += random.randint(-10, 10)
+        
+        return tile_location
+
+    def get_actual_tile_location(self, tile_x, tile_y):
+        pos_x = tile_x * self.tile_size + self.tile_size/2
+        pos_y = tile_y * self.tile_size + self.tile_size/2
+        return Vector2(pos_x, pos_y)
 
     def add_tile(self, filepath, tile_type):
         texture_id = TextureManager.add_texture(filepath)

@@ -15,7 +15,7 @@ class Gem(GameObject):
         self.image = self.animation.get_frame()
         self.rect = self.image.get_rect(center=position)
        
-        self.typez = ITEM_TYPE.GOLD
+        self.typez = ITEM_TYPE.GEM
         self.value = 15
         self.debug = True
 
