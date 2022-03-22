@@ -158,7 +158,7 @@ class LevelManager:
         tile_location = self.get_actual_tile_location(col_index, row_index)
         tile_location.x += random.randint(-10, 10)
         tile_location.y += random.randint(-10, 10)
-        
+
         return tile_location
 
     def get_actual_tile_location(self, tile_x, tile_y):
@@ -169,6 +169,12 @@ class LevelManager:
     def add_tile(self, filepath, tile_type):
         texture_id = TextureManager.add_texture(filepath)
         self.texture_ids[tile_type] = texture_id
+
+    def get_tile(self, position):
+        tile_x = round(position[0]/self.tile_size)
+        tile_y = round(position[1]/self.tile_size)
+        index = tile_x + tile_y * self.cols
+        return self.tiles[index]
 
     def render_layer(self, renderer, layer):
         for row in range(self.rows):

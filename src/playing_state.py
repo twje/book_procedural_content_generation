@@ -1,4 +1,5 @@
 import random
+from traceback import print_tb
 from texture_manager import TextureManager
 from player import Player
 from level_manager import LevelManager
@@ -12,6 +13,8 @@ import pygame
 from pygame.sprite import Group
 from gold import Gold
 from gem import Gem
+from slime import Slime
+from humanoid import Humanoid
 
 
 class PlayingState:
@@ -69,7 +72,17 @@ class PlayingState:
         item_type(spawn_location, [self.items])
 
     def spawn_enemies(self):
-        pass
+        for _ in range(MAX_ENEMY_SPAWN_COUNT):
+            if random.randint(0, 1):
+                enemy_type = random.choice([Slime, Humanoid])
+                self.spawn_enemy(enemy_type)
+
+    def spawn_enemy(self, enemy_type, position=None):
+        if position is None:
+            spawn_location = self.level_manager.get_random_spawn_location()
+        else:
+            spawn_location = position
+        enemy_type(spawn_location, [self.enemies])
 
     # --------------
     # update methods
@@ -99,6 +112,7 @@ class PlayingState:
                 )
                 self.player.add_mana(-mana_required)
                 self.game.update_mana_bar(self.player.mana_percentage)
+                self.game.reset_ui()
 
     def update_light(self):
         self.light_grid.update(self.player)
@@ -133,7 +147,14 @@ class PlayingState:
         return distance < 40
 
     def update_enemies(self):
-        pass
+        for enemy in self.enemies:
+            enemy_tile = self.level_manager.get_tile(enemy.position)
+            for projectile in self.projectiles:
+                projectile_tile = self.level_manager.get_tile(projectile.position)
+                
+                # collision
+                if enemy_tile == projectile_tile:
+                    print("DD")
 
     def update_projectiles(self):  # implement
         for projectile in self.projectiles:

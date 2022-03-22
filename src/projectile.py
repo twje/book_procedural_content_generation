@@ -1,4 +1,5 @@
 import pygame
+from pygame import Vector2
 from game_object import GameObject
 
 

@@ -64,6 +64,9 @@ class ITEM_TYPE(Enum):
     POTION = auto()
     HEART = auto()
 
+class ENEMY_TYPE(Enum):
+    SLIME = 0
+    HUMANOID = auto()
 
 class STAT_TYPE(Enum):
     ATTACK = 0

@@ -3,7 +3,6 @@ import pygame
 from settings import *
 from animation import Animation
 from texture_manager import TextureManager
-from game_object import GameObject
 from ui import SpriteElement
 from entity import Entity
 

@@ -25,6 +25,9 @@ class Game:
             STAT_TYPE.SETMINA: "00",
             STAT_TYPE.STRENGTH: "00"
         }
+        self.hp_percent = 1
+        self.mp_percent = 1
+
         self.load_ui()
 
         self.state_machine = StateMachine()
@@ -33,10 +36,12 @@ class Game:
         pygame.mouse.set_visible(False)
 
     def update_health_bar(self, percent):
-        self.health_bar_sprite.set_width(percent)
+        self.hp_percent = percent
+        self.health_bar_sprite.set_width(self.hp_percent)
 
     def update_mana_bar(self, percent):
-        self.mana_bar_sprite.set_width(percent)
+        self.mp_percent = percent
+        self.mana_bar_sprite.set_width(self.mp_percent)
 
     def add_gold(self, amount):
         self.add_currency(ITEM_TYPE.GOLD, amount)
@@ -86,14 +91,14 @@ class Game:
             [self.ui_sprites, self.top_sprites],
             self.load_texture("../resources/ui/spr_health_bar.png")
         )
-        self.health_bar_width = self.health_bar_sprite.image.get_width()
+        self.health_bar_sprite.set_width(self.hp_percent)
 
         self.mana_bar_sprite = ui.Bar(
             (0, 0),
             [self.ui_sprites, self.top_sprites],
             self.load_texture("../resources/ui/spr_mana_bar.png")
         )
-        self.mana_bar_width = self.mana_bar_sprite.image.get_width()
+        self.mana_bar_sprite.set_width(self.mp_percent)
 
         # coin and gem
         text_width = 100
