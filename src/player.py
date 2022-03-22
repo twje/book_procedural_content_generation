@@ -1,3 +1,4 @@
+import random
 import pygame
 from settings import *
 from animation import Animation
@@ -77,11 +78,25 @@ class Player(GameObject):
         )
         self.aim_sprite.debug = True
 
-        # stats
+        # HP/MP
         self.health = 100
         self.max_health = 100
         self.mana = 50
         self.max_mana = 50
+
+        # STATS
+        self.stat_points = 50
+        bias = [random.random() for _ in range(5)]
+        total = sum(bias)
+        self.stats = {
+            STAT_TYPE.ATTACK: round(self.stat_points * (bias[0] / total)),
+            STAT_TYPE.DEFENCE: round(self.stat_points * (bias[1] / total)),
+            STAT_TYPE.STRENGTH: round(self.stat_points * (bias[2] / total)),
+            STAT_TYPE.DEXTERITY: round(self.stat_points * (bias[3] / total)),
+            STAT_TYPE.SETMINA: round(self.stat_points * (bias[4] / total))
+        }
+
+    # properties
 
     def add_health(self, value):
         self.health = max(0, self.health + value)

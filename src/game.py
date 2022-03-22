@@ -18,6 +18,13 @@ class Game:
             ITEM_TYPE.GOLD: "000000",
             ITEM_TYPE.GEM: "000000",
         }
+        self.stat_values = {
+            STAT_TYPE.ATTACK: "00",
+            STAT_TYPE.DEFENCE: "00",
+            STAT_TYPE.DEXTERITY: "00",
+            STAT_TYPE.SETMINA: "00",
+            STAT_TYPE.STRENGTH: "00"
+        }
         self.load_ui()
 
         self.state_machine = StateMachine()
@@ -32,8 +39,20 @@ class Game:
         self.mana_bar_sprite.set_width(percent)
 
     def add_gold(self, amount):
-        value = int(self.item_values[ITEM_TYPE.GOLD]) + amount
-        self.item_values[ITEM_TYPE.GOLD] = str(value).rjust(6, "0")
+        self.add_currency(ITEM_TYPE.GOLD, amount)
+
+    def add_gem(self, amount):
+        self.add_currency(ITEM_TYPE.GEM, amount)
+
+    def get_stat(self, stat_type):
+        return self.stat_values[stat_type]
+
+    def set_stat(self, stat_type, value):
+        self.stat_values[stat_type] = str(value).rjust(2, "0")
+
+    def add_currency(self, currency_type, amount):
+        value = int(self.item_values[currency_type]) + amount
+        self.item_values[currency_type] = str(value).rjust(6, "0")
         self.reset_ui()
 
     def reset_ui(self):
@@ -127,7 +146,7 @@ class Game:
         self.attack_ui_text = ui.TextElement(
             (0, 0),
             [self.ui_sprites, self.bottom_sprites],
-            "10",
+            self.stat_values[STAT_TYPE.ATTACK],
             min_width=text_width,
         )
 
@@ -144,7 +163,7 @@ class Game:
         self.defence_ui_text = ui.TextElement(
             (0, 0),
             [self.ui_sprites, self.bottom_sprites],
-            "10",
+            self.stat_values[STAT_TYPE.DEFENCE],
             min_width=text_width,
         )
 
@@ -161,7 +180,7 @@ class Game:
         self.strength_ui_text = ui.TextElement(
             (0, 0),
             [self.ui_sprites, self.bottom_sprites],
-            "10",
+            self.stat_values[STAT_TYPE.STRENGTH],
             min_width=text_width,
         )
 
@@ -178,7 +197,7 @@ class Game:
         self.dexterity_ui_text = ui.TextElement(
             (0, 0),
             [self.ui_sprites, self.bottom_sprites],
-            "10",
+            self.stat_values[STAT_TYPE.DEXTERITY],
             min_width=text_width,
         )
 
@@ -195,7 +214,7 @@ class Game:
         self.stamina_ui_text = ui.TextElement(
             (0, 0),
             [self.ui_sprites, self.bottom_sprites],
-            "10",
+            self.stat_values[STAT_TYPE.SETMINA],
             min_width=text_width,
         )
 

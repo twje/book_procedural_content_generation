@@ -1,6 +1,7 @@
 from ctypes.wintypes import POINT
 from enum import Enum
 from enum import auto
+from msilib.schema import Class
 
 # game setup
 WIDTH = 1280
@@ -58,3 +59,11 @@ class ITEM_TYPE(Enum):
     KEY = auto()
     POTION = auto()
     HEART = auto()
+
+
+class STAT_TYPE(Enum):
+    ATTACK = 0
+    DEFENCE = auto()
+    STRENGTH = auto()
+    DEXTERITY = auto()
+    SETMINA = auto()

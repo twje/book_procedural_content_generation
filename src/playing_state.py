@@ -1,3 +1,4 @@
+import random
 from texture_manager import TextureManager
 from player import Player
 from level_manager import LevelManager
@@ -10,6 +11,7 @@ from camera import Camera
 import pygame
 from pygame.sprite import Group
 from gold import Gold
+from gem import Gem
 
 
 class PlayingState:
@@ -23,7 +25,6 @@ class PlayingState:
         self.light_grid_group = Group()
         self.player_projectiles = Group()
         self.camera = Camera()
-
 
         # move
         self.player = Player(
@@ -51,7 +52,11 @@ class PlayingState:
         pass
 
     def populate_level(self):
-        Gold((300, 100), [self.items])
+        if random.randint(0, 1):
+            Gold((300, 100), [self.items])
+
+        if random.randint(0, 1):
+            Gem((200, 200), [self.items])
 
     # --------------
     # update methods
@@ -87,13 +92,14 @@ class PlayingState:
 
     def update_items(self):
         for item in self.items:
+            item.update()
             if not self.player_collised_with_item(item):
                 continue
-            
+
             if item.typez == ITEM_TYPE.GOLD:
                 self.game.add_gold(item.value)
             elif item.typez == ITEM_TYPE.GEM:
-                pass
+                self.game.add_gem(item.value)
             elif item.typez == ITEM_TYPE.KEY:
                 pass
             elif item.typez == ITEM_TYPE.POTION:
@@ -127,6 +133,7 @@ class PlayingState:
             self.renderer.render_batch()
         self.light_grid.render(self.renderer)
         self.renderer.render(self.player.aim_sprite)
+        self.render_stats()
 
     def render_level(self, layer):
         self.level_manager.render_layer(self.renderer, layer)
@@ -149,3 +156,14 @@ class PlayingState:
         for sprite in self.enemies:
             if sprite.z == layer:
                 self.renderer.add_to_render_batch(sprite)
+
+    def render_stats(self):
+        is_stat_different = False
+        for stat_type, value in self.player.stats.items():
+            if self.game.get_stat(stat_type) != value:
+                self.game.set_stat(stat_type, value)
+                is_stat_different = True
+
+        # be efficient
+        if is_stat_different:
+            self.game.reset_ui()
