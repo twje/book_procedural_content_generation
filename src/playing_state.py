@@ -107,6 +107,7 @@ class PlayingState:
                 Projectile(
                     self.player.rect.center,
                     [self.projectiles],
+                    self.obstacle_sprites,
                     TextureManager.get_texture(self.project_texture_id),
                     target
                 )
