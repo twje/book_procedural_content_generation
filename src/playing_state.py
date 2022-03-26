@@ -107,7 +107,6 @@ class PlayingState:
                 Projectile(
                     self.player.rect.center,
                     [self.projectiles],
-                    self.obstacle_sprites,
                     TextureManager.get_texture(self.project_texture_id),
                     target
                 )
@@ -149,21 +148,27 @@ class PlayingState:
 
     def update_enemies(self):
         for enemy in self.enemies:
-            enemy_tile = self.level_manager.get_tile(enemy.position)
             for projectile in self.projectiles:
-                projectile_tile = self.level_manager.get_tile(projectile.position)
-                
-                # collision
-                if enemy_tile == projectile_tile:
-                    print("DD")
+                if not enemy.rect.colliderect(projectile):
+                    continue
+                enemy.take_demage(25)
+                if enemy.is_dead():
+                    position = enemy.rect.center
+
+                projectile.kill()
 
     def update_projectiles(self):  # implement
         for projectile in self.projectiles:
-            projectile.update()
+            for obstacle in self.obstacle_sprites:
+                if obstacle.rect.colliderect(projectile.rect):
+                    projectile.kill()
+                else:
+                    projectile.update()
 
     # --------------
     # render methods
     # --------------
+
     def render(self):
         for layer in range(self.level_manager.layers):
             self.render_level(layer)

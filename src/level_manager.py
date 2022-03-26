@@ -116,15 +116,22 @@ class LevelManager:
             for col in range(self.cols):
                 x = col * self.tile_size
                 y = row * self.tile_size
-                index = terrain_map[row][col]
-                texture_id = self.texture_ids[index]
+                tile_type = terrain_map[row][col]
+                texture_id = self.texture_ids[tile_type]
                 surface = TextureManager.get_texture(texture_id)
-                if self.is_solid(index):
-                    tile = Tile(index, (x, y), [
-                                self.obstacle_sprites], surface)
+                if self.is_solid(tile_type):
+                    groups = [self.obstacle_sprites]
                 else:
-                    tile = Tile(index, (x, y), [], surface)
-                self.tiles.append(tile)
+                    groups = []
+                self.tiles.append(
+                    Tile(
+                        tile_type,
+                        Vector2(col, row),
+                        Vector2(x, y),
+                        groups,
+                        surface
+                    )
+                )
 
         # torches
         for torch_pos in (
@@ -145,7 +152,7 @@ class LevelManager:
 
     def is_floor(self, tile_x, tile_y):
         index = tile_x + tile_y * self.cols
-        tile_type = self.tiles[index].tile_type
+        tile_type = self.tiles[int(index)].tile_type
         return tile_type == TILE.FLOOR.value or tile_type == TILE.FLOOR_ALT.value
 
     def get_random_spawn_location(self):

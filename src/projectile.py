@@ -32,9 +32,8 @@ class Transform:
 
 
 class Projectile(GameObject):
-    def __init__(self, position, groups, obstacle_sprites, surface, target):
-        super().__init__(groups)
-        self.obstacle_sprites = obstacle_sprites
+    def __init__(self, position, groups, surface, target):
+        super().__init__(groups)        
         self.position = Vector2(position)
         self.transform = Transform(surface)
         self.rotate_transform = RotateTransform(45)
@@ -53,23 +52,10 @@ class Projectile(GameObject):
     def update(self):
         delta = (pygame.time.get_ticks() - self.timestamp)/1000
         self.timestamp = pygame.time.get_ticks()
-        self.position.x += self.velocity.x * delta * 500
-        self.collision('horizontal')
-        self.position.y += self.velocity.y * delta * 500
-        self.collision('vertical')
+        self.position += self.velocity * delta * 500                
         self.rotate(delta)
         self.rect.center = (round(self.position.x), round(self.position.y))
 
-    def collision(self, direction):
-        if direction == 'horizontal':
-            for sprite in self.obstacle_sprites:
-                if sprite.hitbox.colliderect(self.rect):
-                    self.kill()
-
-        if direction == 'vertical':
-            for sprite in self.obstacle_sprites:
-                if sprite.hitbox.colliderect(self.rect):
-                    self.kill()
 
     def rotate(self, delta):
         self.angle += 400 * delta
